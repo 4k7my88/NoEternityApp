@@ -10,4 +10,4 @@ There are no eternity.
 downloadable link below
 
 
-https://play.google.com/store/apps/details?id=processing.test.noeternity
+https://play.google.com/store/apps/details?id=processing.test.noeternityapp
