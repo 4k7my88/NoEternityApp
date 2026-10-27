@@ -30,9 +30,17 @@ export function blueAt(x: number, width: number): number {
   return clampChannel((x / (width * SKETCH.blueFullAt)) * 255);
 }
 
+/** One circle from a painted row, for the sound to play. */
+export interface CircleSample {
+  x: number;
+  red: number;
+  green: number;
+}
+
 /**
  * The original `one()`: a row of translucent circles across the screen at `y`,
- * each with its own random red and green.
+ * each with its own random red and green. Returns one of the circles it drew,
+ * picked at random.
  */
 export function paintRow(
   ctx: PaintContext,
@@ -40,16 +48,23 @@ export function paintRow(
   y: number,
   blue: number,
   rowWidth: number,
-): void {
+): CircleSample {
   const radius = SKETCH.diameter / 2;
-  for (let x = 0; x - radius < rowWidth; x += SKETCH.spacing) {
+  // As many circles as it takes for the last one to reach past the right edge.
+  const count = Math.ceil((rowWidth + radius) / SKETCH.spacing);
+  const picked = Math.floor(rng() * count);
+  let sample: CircleSample = { x: 0, red: 0, green: 0 };
+  for (let i = 0; i < count; i++) {
+    const x = i * SKETCH.spacing;
     const red = warmChannel(rng);
     const green = warmChannel(rng);
     ctx.fillStyle = `rgba(${red},${green},${blue},${ALPHA})`;
     ctx.beginPath();
     ctx.arc(x, y, radius, 0, TAU);
     ctx.fill();
+    if (i === picked) sample = { x, red, green };
   }
+  return sample;
 }
 
 export interface DissolveState {

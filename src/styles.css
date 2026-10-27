@@ -319,3 +319,20 @@ body[data-ui='hidden'] .hint {
   fill: currentColor;
   stroke: none;
 }
+
+/* Sound toggle: the icon shows the state, so it doesn't invert like the hold buttons. */
+#sound[aria-pressed='true'] {
+  background: transparent;
+  color: var(--ink);
+}
+
+#sound[aria-pressed='true'] .sound-off,
+#sound[aria-pressed='false'] .sound-on {
+  display: none;
+}
+
+@media (hover: hover) {
+  #sound[aria-pressed='true']:hover {
+    background: rgb(255 255 255 / 0.12);
+  }
+}

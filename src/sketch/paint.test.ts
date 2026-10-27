@@ -105,6 +105,20 @@ describe('paintRow (the original one())', () => {
     }
     expect(new Set(ctx.fills).size).toBeGreaterThan(ctx.fills.length / 2);
   });
+
+  it('hands back one of the circles it actually drew, for the sound', () => {
+    const drawn = new Set<string>();
+    for (let seed = 0; seed < 50; seed++) {
+      const ctx = recorder();
+      const circle = paintRow(ctx, createRng(seed), 10, 9, 200);
+      const index = ctx.calls.filter(([m]) => m === 'arc').findIndex(([, x]) => x === circle.x);
+      expect(index).toBeGreaterThanOrEqual(0);
+      expect(ctx.fills[index]).toBe(`rgba(${circle.red},${circle.green},9,${+(40 / 255).toFixed(4)})`);
+      drawn.add(String(circle.x));
+    }
+    // Picked across the row, not always the same one.
+    expect(drawn.size).toBeGreaterThan(10);
+  });
 });
 
 describe('scatter (the original CLASS.display())', () => {

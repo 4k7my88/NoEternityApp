@@ -27,6 +27,7 @@ A review of the 2015 Processing for Android project in `noEternity/`, and how th
 | 10 | No way to start over. | A Clear button. |
 | 11 | No tests or build checks. | Unit tests for the ported drawing logic, a typecheck, and a GitHub Actions workflow that runs both plus the build on every pull request. |
 | 12 | macOS metadata files (`.DS_Store`, `._*`) committed. | Removed, and ignored in `.gitignore`. |
+| 13 | Silent. | Optional generative sound that follows the picture: height is pitch, colour is tone, new paint rings out, fullness sets the reverb, and dissolving blurs the sound. Off until the visitor turns it on. |
 
 The look follows the original closely: the same circle size, spacing, opacity, colour distribution and accumulation, the same title position, and the same dissolve loops, ported line by line. Resizing the window or rotating a phone keeps the picture instead of wiping it.
 

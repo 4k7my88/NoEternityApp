@@ -44,6 +44,13 @@
     <p class="hint" aria-hidden="true">Move or touch to paint · hold <svg class="glyph" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" /><path d="M12 4a8 8 0 0 0 0 16z" class="solid" /></svg> to dissolve</p>
 
     <nav id="toolbar" class="toolbar" aria-label="Artwork controls">
+      <button id="sound" class="tool" type="button" aria-pressed="false" aria-label="Sound" title="Sound (M)">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" />
+          <path class="sound-on" d="M15.5 9.2a4 4 0 0 1 0 5.6M18.2 6.6a7.6 7.6 0 0 1 0 10.8" />
+          <path class="sound-off" d="M16 9.5l5 5M21 9.5l-5 5" />
+        </svg>
+      </button>
       <button id="dissolve" class="tool" type="button" aria-pressed="false" aria-label="Dissolve (hold)" title="Dissolve: hold, or hold Space">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" /><path d="M12 4a8 8 0 0 0 0 16z" class="solid" /></svg>
       </button>
@@ -77,9 +84,13 @@
           <li><strong>Move or drag</strong> to paint bands of colour. Every finger paints its own band.</li>
           <li><strong>Hold <svg class="glyph" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" /><path d="M12 4a8 8 0 0 0 0 16z" class="solid" /></svg><span class="visually-hidden">the dissolve button</span></strong> to dissolve what is there.</li>
           <li><strong>Leave it alone</strong> and it goes on painting itself, like a screen saver.</li>
+          <li>
+            <strong>Turn the sound on</strong> to hear the picture: height is pitch, colour is tone, fresh paint rings
+            out, and dissolving blurs the sound too.
+          </li>
           <li><strong>Save</strong> keeps this moment as a picture. It will not come back.</li>
         </ul>
-        <p class="keys">Keys: arrows move · Space dissolve · S save · F full screen · I about</p>
+        <p class="keys">Keys: arrows move · Space dissolve · M sound · S save · F full screen · I about</p>
 
         <p class="credits">
           First made in 2015 with Processing, as an Android app.

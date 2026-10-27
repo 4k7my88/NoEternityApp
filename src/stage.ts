@@ -1,6 +1,7 @@
 import { SKETCH } from './sketch/config';
 import { blurInPlace } from './sketch/blur';
 import { createDrift, type Drift, type Point } from './sketch/drift';
+import { InkMap } from './sketch/ink';
 import {
   blueAt,
   createDissolveState,
@@ -8,6 +9,7 @@ import {
   paintRow,
   scatter,
   titleLayout,
+  type CircleSample,
 } from './sketch/paint';
 import { createRng, randomSeed, type Rng } from './sketch/random';
 
@@ -16,6 +18,30 @@ const STEP_MS = 1000 / SKETCH.stepsPerSecond;
 const MAX_STEPS_PER_FRAME = 4;
 /** Beyond 2x the extra pixels cost memory and time without visible gain on soft circles. */
 const MAX_DPR = 2;
+/** Brush id for the resting pointer; touches use their pointer ids. */
+const CURSOR_ID = -1;
+
+/** One row painted during a step. */
+export interface BrushFrame {
+  id: number;
+  x: number;
+  y: number;
+  blue: number;
+  /** How much the picture changed under the row: 1 on black, near 0 over saturated paint. */
+  change: number;
+  /** One of the circles just drawn. */
+  circle: CircleSample;
+}
+
+/** What one step of the animation did, for the sound to follow. */
+export interface StepFrame {
+  brushes: BrushFrame[];
+  dissolving: boolean;
+  /** How much of the visible picture is painted, 0–1. */
+  fullness: number;
+  width: number;
+  height: number;
+}
 
 export interface StageElements {
   art: HTMLCanvasElement;
@@ -42,6 +68,8 @@ interface Viewport {
 export class Stage {
   /** Called on every visitor input, so the controls can show themselves. */
   onInput: () => void = () => {};
+  /** Called after every animation step with what was painted. */
+  onStep: (frame: StepFrame) => void = () => {};
 
   readonly #art: HTMLCanvasElement;
   readonly #ctx: CanvasRenderingContext2D;
@@ -52,6 +80,7 @@ export class Stage {
   readonly #rng: Rng;
   readonly #drift: Drift;
   readonly #dissolve = createDissolveState();
+  readonly #ink = new InkMap();
   #scratch: HTMLCanvasElement | null = null;
 
   #dpr = 0;
@@ -117,6 +146,7 @@ export class Stage {
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, this.#art.width, this.#art.height);
     ctx.restore();
+    this.#ink.clear();
   }
 
   setDissolving(on: boolean): void {
@@ -170,19 +200,32 @@ export class Stage {
 
     const ctx = this.#ctx;
     const rowWidth = this.#size.width;
+    const brushes: BrushFrame[] = [];
+    const paint = (id: number, { x, y }: Point) => {
+      const blue = blueAt(x, width);
+      const circle = paintRow(ctx, this.#rng, y, blue, rowWidth);
+      brushes.push({ id, x, y, blue, change: this.#ink.paint(y), circle });
+    };
     if (this.#touches.size > 0) {
-      for (const touch of this.#touches.values()) {
-        paintRow(ctx, this.#rng, touch.y, blueAt(touch.x, width), rowWidth);
-      }
+      for (const [id, touch] of this.#touches) paint(id, touch);
     } else {
-      paintRow(ctx, this.#rng, this.#cursor.y, blueAt(this.#cursor.x, width), rowWidth);
+      paint(CURSOR_ID, this.#cursor);
     }
 
     if (this.#dissolving) {
       this.#scratch ??= document.createElement('canvas');
       blurInPlace(ctx, this.#scratch, SKETCH.dissolve.blurRadius * this.#dpr);
       scatter(ctx, this.#rng, this.#dissolve);
+      this.#ink.dissolve();
     }
+
+    this.onStep({
+      brushes,
+      dissolving: this.#dissolving,
+      fullness: this.#ink.fullness(height),
+      width,
+      height,
+    });
   }
 
   #isIdle(now: number): boolean {
@@ -259,6 +302,7 @@ export class Stage {
 
     this.#dpr = dpr;
     this.#size = { width, height };
+    this.#ink.resize(height);
   }
 
   #drawTitleLayer(): void {

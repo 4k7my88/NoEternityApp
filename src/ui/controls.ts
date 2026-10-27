@@ -1,8 +1,10 @@
+import type { SoundEngine } from '../sound/engine';
 import type { Stage } from '../stage';
 import { artworkFileName, saveImage } from './save';
 
 export interface ControlElements {
   toolbar: HTMLElement;
+  sound: HTMLButtonElement;
   dissolve: HTMLButtonElement;
   save: HTMLButtonElement;
   clear: HTMLButtonElement;
@@ -17,8 +19,9 @@ const HIDE_AFTER_MS = 3000;
 const TOAST_MS = 2400;
 const NUDGE_PX = 10;
 const NUDGE_FAST_PX = 50;
+const SOUND_PREFERENCE = 'no-eternity:sound';
 
-export function setupControls(stage: Stage, el: ControlElements): void {
+export function setupControls(stage: Stage, sound: SoundEngine, el: ControlElements): void {
   const body = document.body;
   // Touch screens keep `:hover` on the last tapped button, so only trust it with a real pointer.
   const canHover = window.matchMedia('(hover: hover)');
@@ -95,6 +98,31 @@ export function setupControls(stage: Stage, el: ControlElements): void {
   }
   el.save.addEventListener('click', () => void save());
 
+  // Sound starts off: browsers block it until a gesture, and it should be the visitor's choice.
+  let wantSound = readSoundPreference();
+  el.sound.setAttribute('aria-pressed', String(wantSound));
+  function setSound(on: boolean): void {
+    wantSound = on;
+    el.sound.setAttribute('aria-pressed', String(on));
+    writeSoundPreference(on);
+    if (on) sound.start();
+    else sound.stop();
+    toast(on ? 'Sound on' : 'Sound off');
+  }
+  el.sound.addEventListener('click', () => setSound(!wantSound));
+  // A visitor who chose sound before hears it again from their first touch or key press,
+  // which is also what brings it back if the system interrupted it.
+  const resumeSound = (event: Event) => {
+    const toggling =
+      (event.target instanceof Node && el.sound.contains(event.target)) ||
+      (event instanceof KeyboardEvent && event.key.toLowerCase() === 'm');
+    if (wantSound && !toggling) sound.start();
+  };
+  // Which events count as a gesture differs: a touch counts when it ends, a mouse when pressed.
+  for (const type of ['pointerdown', 'pointerup', 'touchend', 'keydown'] as const) {
+    window.addEventListener(type, resumeSound, true);
+  }
+
   el.clear.addEventListener('click', () => {
     stage.clear();
     toast('Cleared. There is no eternity.');
@@ -126,6 +154,8 @@ export function setupControls(stage: Stage, el: ControlElements): void {
   window.addEventListener('keydown', (event) => {
     if (event.metaKey || event.ctrlKey || event.altKey || el.dialog.open) return;
     const onControl = event.target instanceof Element && event.target.closest('button, a') !== null;
+    // Holding a key down repeats it: only moving and dissolving should, not saving or toggling.
+    if (event.repeat && event.key !== ' ' && !event.key.startsWith('Arrow')) return;
     const step = event.shiftKey ? NUDGE_FAST_PX : NUDGE_PX;
 
     switch (event.key) {
@@ -150,6 +180,10 @@ export function setupControls(stage: Stage, el: ControlElements): void {
       case 'S':
         void save();
         break;
+      case 'm':
+      case 'M':
+        setSound(!wantSound);
+        break;
       case 'f':
       case 'F':
         if (document.fullscreenEnabled) void toggleFullscreen();
@@ -169,6 +203,11 @@ export function setupControls(stage: Stage, el: ControlElements): void {
   });
 
   el.toolbar.addEventListener('focusin', showControls);
+  // A tapped or clicked button lets go of focus, so Space dissolves next instead of pressing
+  // it again (say, clearing twice). Keyboard users keep their place: their clicks have no detail.
+  el.toolbar.addEventListener('click', (event) => {
+    if (event.detail > 0 && event.target instanceof Element) event.target.closest('button')?.blur();
+  });
   el.toolbar.addEventListener('contextmenu', (event) => event.preventDefault());
 
   function openAbout(): void {
@@ -177,6 +216,22 @@ export function setupControls(stage: Stage, el: ControlElements): void {
   }
 
   showControls();
+}
+
+function readSoundPreference(): boolean {
+  try {
+    return localStorage.getItem(SOUND_PREFERENCE) === 'on';
+  } catch {
+    return false;
+  }
+}
+
+function writeSoundPreference(on: boolean): void {
+  try {
+    localStorage.setItem(SOUND_PREFERENCE, on ? 'on' : 'off');
+  } catch {
+    // Private mode or blocked storage: the choice just isn't remembered.
+  }
 }
 
 async function toggleFullscreen(): Promise<void> {

@@ -1,4 +1,5 @@
 import './styles.css';
+import { SoundEngine } from './sound/engine';
 import { Stage } from './stage';
 import { setupControls } from './ui/controls';
 
@@ -14,8 +15,12 @@ const stage = new Stage({
   viewportProbe: byId('viewport-probe'),
 });
 
-setupControls(stage, {
+const sound = new SoundEngine();
+stage.onStep = (frame) => sound.update(frame);
+
+setupControls(stage, sound, {
   toolbar: byId('toolbar'),
+  sound: byId('sound'),
   dissolve: byId('dissolve'),
   save: byId('save'),
   clear: byId('clear'),

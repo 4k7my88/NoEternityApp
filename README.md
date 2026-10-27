@@ -15,10 +15,28 @@ The piece runs in the browser on phones, tablets and computers:
 - **Move the mouse or drag a finger** to paint bands of translucent colour. Every finger paints its own band, and the band keeps building where you let go, as it did in the app.
 - **Hold the ◐ button, or the space bar,** to dissolve the image. This brings back the blur-and-scratch effect from the original installation, which was triggered by sensors.
 - **Leave it alone** and it keeps painting itself, like a screen saver. Full screen also keeps the display awake.
+- **Turn on the sound** (speaker button or M) to hear the picture. It's off until you ask, and the choice is remembered.
 - **Save** downloads the current moment as a PNG (on phones it opens the share sheet).
-- Keys: arrow keys move the brush · Space dissolve · S save · F full screen · I about.
+- Keys: arrow keys move the brush · Space dissolve · M sound · S save · F full screen · I about.
 
 It is a static site with no server and no tracking. The code and styles together are under 10 KB gzipped, and it can be added to a home screen like an app.
+
+### Sound
+
+The sound is generated live with the Web Audio API (no audio files) and follows what is on screen:
+
+| In the picture                                    | In the sound                                                      |
+| ------------------------------------------------- | ----------------------------------------------------------------- |
+| Height of the brush                               | Pitch, in A minor pentatonic: low at the bottom, high at the top  |
+| Blue (horizontal position): warm left, pale right | Tone: dark and soft for warm colours, bright and airy for pastels |
+| New paint landing on black                        | The drone swells and painted circles ring out as bells            |
+| Painting over paint that is already saturated     | It settles to a quiet hum with the odd bell                       |
+| Each bell's circle: position, red, green          | Stereo position; pale circles ring chord tones, warm ones others  |
+| How full the picture is                           | How big the room sounds (reverb)                                  |
+| Dissolve: blur and black squares                  | Muffled, smeared, slightly detuned sound, with crackle            |
+| Every finger                                      | Its own drone                                                     |
+
+Every value is in [`src/sound/mapping.ts`](src/sound/mapping.ts). The engine is [`src/sound/engine.ts`](src/sound/engine.ts).
 
 ### Run it locally
 
@@ -61,6 +79,7 @@ Every tunable value is in [`src/sketch/config.ts`](src/sketch/config.ts): circle
 | `text("no Eternity", displayWidth/7, displayHeight/3)`      | `drawTitle()` / `titleLayout()`                 |
 | `draw()` at 60 fps, never clearing the background           | the fixed 60 Hz loop in `stage.ts`              |
 | Arduino sensors 3 and 4 trigger `CLASS.display()`           | the ◐ button and the space bar                  |
+| (no sound)                                                  | `sound/engine.ts`, following `sketch/ink.ts`    |
 
 ## The original app (2015)
 
