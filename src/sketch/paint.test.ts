@@ -4,20 +4,17 @@ import {
   blueAt,
   clampChannel,
   createDissolveState,
-  drawTitle,
   paintRow,
   scatter,
-  titleLayout,
   warmChannel,
   type PaintContext,
-  type TextContext,
 } from './paint';
 import { createRng } from './random';
 
 type Call = [method: string, ...args: unknown[]];
 
 /** Records what the painting code asks of a canvas. */
-function recorder(): PaintContext & TextContext & { calls: Call[]; fills: string[] } {
+function recorder(): PaintContext & { calls: Call[]; fills: string[] } {
   const calls: Call[] = [];
   const fills: string[] = [];
   const log =
@@ -36,8 +33,6 @@ function recorder(): PaintContext & TextContext & { calls: Call[]; fills: string
       fillStyle = value;
       fills.push(String(value));
     },
-    font: '',
-    textBaseline: 'alphabetic',
     beginPath: log('beginPath'),
     arc: log('arc'),
     fill: log('fill'),
@@ -46,7 +41,6 @@ function recorder(): PaintContext & TextContext & { calls: Call[]; fills: string
     restore: log('restore'),
     translate: log('translate'),
     rotate: log('rotate'),
-    fillText: log('fillText'),
   };
 }
 
@@ -151,28 +145,5 @@ describe('scatter (the original CLASS.display())', () => {
     expect(state.angle).toBeCloseTo(10 + 133 * 0.1);
     scatter(recorder(), createRng(1), state);
     expect(state.angle).toBeCloseTo(10 + 266 * 0.1);
-  });
-});
-
-describe('title', () => {
-  it('puts the baseline at (width/7, height/3) like the original', () => {
-    const layout = titleLayout(1400, 900);
-    expect(layout.x).toBeCloseTo(200);
-    expect(layout.y).toBeCloseTo(300);
-  });
-
-  it('matches the 2015 promo proportions and never gets unreadably small', () => {
-    expect(titleLayout(1024, 500).size).toBe(92);
-    expect(titleLayout(2560, 600).size).toBe(120);
-    expect(titleLayout(200, 300).size).toBe(SKETCH.titleMinSize);
-  });
-
-  it('draws "no Eternity" in black on the baseline', () => {
-    const ctx = recorder();
-    const layout = titleLayout(700, 700);
-    drawTitle(ctx, layout);
-    expect(ctx.font).toBe(layout.font);
-    expect(ctx.fills).toEqual(['#000']);
-    expect(ctx.calls).toContainEqual(['fillText', 'no Eternity', layout.x, layout.y]);
   });
 });

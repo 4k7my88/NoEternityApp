@@ -5,10 +5,8 @@ import { InkMap } from './sketch/ink';
 import {
   blueAt,
   createDissolveState,
-  drawTitle,
   paintRow,
   scatter,
-  titleLayout,
   type CircleSample,
 } from './sketch/paint';
 import { createRng, randomSeed, type Rng } from './sketch/random';
@@ -45,7 +43,6 @@ export interface StepFrame {
 
 export interface StageElements {
   art: HTMLCanvasElement;
-  title: HTMLCanvasElement;
   /** An element sized `100lvh`, to size against the viewport with mobile browser bars hidden. */
   viewportProbe: HTMLElement;
 }
@@ -54,7 +51,7 @@ interface Viewport {
   width: number;
   /** What is visible right now. */
   height: number;
-  /** The largest height the browser can show; the title is laid out against this. */
+  /** The largest height the browser can show, with mobile browser bars hidden. */
   layoutHeight: number;
 }
 
@@ -73,8 +70,6 @@ export class Stage {
 
   readonly #art: HTMLCanvasElement;
   readonly #ctx: CanvasRenderingContext2D;
-  readonly #title: HTMLCanvasElement;
-  readonly #titleCtx: CanvasRenderingContext2D;
   readonly #probe: HTMLElement;
   readonly #reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   readonly #rng: Rng;
@@ -97,14 +92,11 @@ export class Stage {
   #lastFrame = 0;
   #pending = 0;
 
-  constructor({ art, title, viewportProbe }: StageElements, seed = randomSeed()) {
+  constructor({ art, viewportProbe }: StageElements, seed = randomSeed()) {
     const ctx = art.getContext('2d', { alpha: false });
-    const titleCtx = title.getContext('2d');
-    if (!ctx || !titleCtx) throw new Error('This browser cannot draw on a canvas.');
+    if (!ctx) throw new Error('This browser cannot draw on a canvas.');
     this.#art = art;
     this.#ctx = ctx;
-    this.#title = title;
-    this.#titleCtx = titleCtx;
     this.#probe = viewportProbe;
     this.#rng = createRng(seed);
     this.#drift = createDrift(this.#rng);
@@ -135,7 +127,6 @@ export class Stage {
     if (dpr !== this.#dpr || width !== this.#size.width || height !== this.#size.height) {
       this.#resizeSurface(width, height, dpr);
     }
-    this.#drawTitleLayer();
   }
 
   /** Paint everything black again. */
@@ -164,15 +155,15 @@ export class Stage {
     this.#noteInput();
   }
 
-  /** The current screen, title included, as a PNG. */
+  /** The current screen as a PNG. */
   toBlob(): Promise<Blob> {
+    const { width, layoutHeight } = this.#viewport;
     const out = document.createElement('canvas');
-    out.width = this.#title.width;
-    out.height = this.#title.height;
+    out.width = Math.round(width * this.#dpr);
+    out.height = Math.round(layoutHeight * this.#dpr);
     const ctx = out.getContext('2d');
     if (!ctx) return Promise.reject(new Error('This browser cannot draw on a canvas.'));
     ctx.drawImage(this.#art, 0, 0);
-    ctx.drawImage(this.#title, 0, 0);
     return new Promise((resolve, reject) =>
       out.toBlob(
         (blob) => (blob ? resolve(blob) : reject(new Error('Could not encode the image.'))),
@@ -303,18 +294,5 @@ export class Stage {
     this.#dpr = dpr;
     this.#size = { width, height };
     this.#ink.resize(height);
-  }
-
-  #drawTitleLayer(): void {
-    const { width, layoutHeight } = this.#viewport;
-    const dpr = this.#dpr;
-    const canvas = this.#title;
-    canvas.width = Math.round(width * dpr);
-    canvas.height = Math.round(layoutHeight * dpr);
-    canvas.style.width = `${width}px`;
-    canvas.style.height = `${layoutHeight}px`;
-    const ctx = this.#titleCtx;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    drawTitle(ctx, titleLayout(width, layoutHeight));
   }
 }

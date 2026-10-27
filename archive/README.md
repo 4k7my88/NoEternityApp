@@ -5,7 +5,7 @@
 - `noEternity.pde`: the main sketch, which paints rows of translucent circles where you touch.
 - `CLASS.pde`: the blur-and-black-squares "dissolve" effect.
 - `data/`: the bitmap fonts the sketch used for its title.
-- `icon.png`, `Untitled-2.png`, `Untitled-2.jpg`: the app icon and promotional art. The website's icons and link-preview image are made from these.
+- `icon.png`, `Untitled-2.png`, `Untitled-2.jpg`: the app icon and promotional art. The website's icons are made from `icon.png`.
 
 ## The sensor version
 

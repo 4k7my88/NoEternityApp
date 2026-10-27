@@ -71,14 +71,14 @@ Link previews (for example in messages and social posts) use the production doma
 
 ### Change the artwork
 
-Every tunable value is in [`src/sketch/config.ts`](src/sketch/config.ts): circle size and spacing, opacity, colour ranges, title, screen-saver speed and the dissolve effect. Each value is annotated with the line of the original sketch it comes from.
+Every tunable value is in [`src/sketch/config.ts`](src/sketch/config.ts): circle size and spacing, opacity, colour ranges, screen-saver speed and the dissolve effect. Each value is annotated with the line of the original sketch it comes from.
 
 | Original (`archive/noEternity/*.pde`)                       | Web (`src/`)                                    |
 | ----------------------------------------------------------- | ----------------------------------------------- |
 | `one()`: a row of circles at `mouseY`                       | `paintRow()` in `sketch/paint.ts`               |
 | `fill(random(10,555), random(10,555), mouseX, 40)`          | `warmChannel()` and `blueAt()`                  |
 | `CLASS.display()`: `filter(BLUR)` + rotating black squares  | `blurInPlace()` + `scatter()`                   |
-| `text("no Eternity", displayWidth/7, displayHeight/3)`      | `drawTitle()` / `titleLayout()`                 |
+| `text("no Eternity", displayWidth/7, displayHeight/3)`      | left out: no text over the picture              |
 | `draw()` at 60 fps, never clearing the background           | the fixed 60 Hz loop in `stage.ts`              |
 | Arduino sensors 3 and 4 trigger `CLASS.display()`           | the ◐ button and the space bar                  |
 | (no sound)                                                  | `sound/engine.ts`, following `sketch/ink.ts`    |

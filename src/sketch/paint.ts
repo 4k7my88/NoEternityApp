@@ -6,10 +6,6 @@ export type PaintContext = Pick<
   CanvasRenderingContext2D,
   'fillStyle' | 'beginPath' | 'arc' | 'fill' | 'rect' | 'save' | 'restore' | 'translate' | 'rotate'
 >;
-export type TextContext = Pick<
-  CanvasRenderingContext2D,
-  'font' | 'textBaseline' | 'fillStyle' | 'fillText' | 'save' | 'restore'
->;
 
 const TAU = Math.PI * 2;
 const ALPHA = +(SKETCH.alpha / 255).toFixed(4);
@@ -95,35 +91,5 @@ export function scatter(ctx: PaintContext, rng: Rng, state: DissolveState): void
     }
   }
   ctx.fill();
-  ctx.restore();
-}
-
-export interface TitleLayout {
-  x: number;
-  y: number;
-  size: number;
-  font: string;
-}
-
-export function titleLayout(width: number, height: number): TitleLayout {
-  const size = Math.max(
-    SKETCH.titleMinSize,
-    Math.round(Math.min(width * SKETCH.titleSizeOfWidth, height * SKETCH.titleSizeOfHeight)),
-  );
-  return {
-    x: width * SKETCH.titleX,
-    y: height * SKETCH.titleY,
-    size,
-    font: `${size}px ${SKETCH.titleFont}`,
-  };
-}
-
-/** `text("no Eternity", x, y)` in black, with `y` as the baseline like Processing. */
-export function drawTitle(ctx: TextContext, layout: TitleLayout): void {
-  ctx.save();
-  ctx.font = layout.font;
-  ctx.textBaseline = 'alphabetic';
-  ctx.fillStyle = '#000';
-  ctx.fillText(SKETCH.title, layout.x, layout.y);
   ctx.restore();
 }

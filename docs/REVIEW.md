@@ -18,18 +18,18 @@ A review of the 2015 Processing for Android project (its sketch now lives in `ar
 | 1 | Android-only, and stuck on API level 10 (Android 2.3). Google Play has required much newer target APIs for years, so the listing is probably hidden or removed for current devices. (I couldn't check this from the build environment.) | A website for desktop browsers that also works on phones and tablets. The Android project files are removed. |
 | 2 | The dissolve effect (`CLASS.display()`) is dead code without the sensors. | Brought back as a hold gesture (the ◐ button or the space bar). Holding the button with one finger while painting with another works like the original's separate sensors. |
 | 3 | Only one touch is used. | Every finger paints its own band. |
-| 4 | Sizes are raw device pixels, so the piece looks different on every screen density. The blue channel maxes out at a different point on every device. | Sizes are CSS pixels. Blue maxes out at a fixed fraction (30%) of the width, which keeps the 2015 phone feel on any screen. The title scales with the screen, matching the proportions of the promo art. |
+| 4 | Sizes are raw device pixels, so the piece looks different on every screen density. The blue channel maxes out at a different point on every device. | Sizes are CSS pixels. Blue maxes out at a fixed fraction (30%) of the width, which keeps the 2015 phone feel on any screen. |
 | 5 | Always draws 1,000 circles per frame, even off screen. | Draws only enough circles to cover the width. |
 | 6 | Speed depends on the device: slow phones paint more slowly, and on 120 Hz screens it would paint twice as fast. | A fixed 60 steps per second, so it builds up the same way everywhere. |
 | 7 | A "screen saver" that does nothing until touched. | After 6 seconds without input, an invisible hand keeps wandering and painting. Turned off for visitors who ask their system for reduced motion. |
 | 8 | Nothing can be kept. | Save to PNG (the share sheet on phones). |
-| 9 | 1.9 MB of bitmap fonts (`.vlw`) just for the title. | Uses the system serif. No font download. |
+| 9 | "no Eternity" written over the picture, using 1.9 MB of bitmap fonts (`.vlw`). | No text over the picture, so no fonts to download. The name stays in the page title and the About panel. |
 | 10 | No way to start over. | A Clear button. |
 | 11 | No tests or build checks. | Unit tests for the ported drawing logic, a typecheck, and a GitHub Actions workflow that runs both plus the build on every pull request. |
 | 12 | macOS metadata files (`.DS_Store`, `._*`) committed. | Removed, and ignored in `.gitignore`. |
 | 13 | Silent. | Optional generative sound that follows the picture: height is pitch, colour is tone, new paint rings out, fullness sets the reverb, and dissolving blurs the sound. Off until the visitor turns it on. |
 
-The look follows the original closely: the same circle size, spacing, opacity, colour distribution and accumulation, the same title position, and the same dissolve loops, ported line by line. Resizing the window or rotating a phone keeps the picture instead of wiping it.
+The look follows the original closely: the same circle size, spacing, opacity, colour distribution and accumulation, and the same dissolve loops, ported line by line. Resizing the window or rotating a phone keeps the picture instead of wiping it.
 
 ## Still to decide (needs the owner)
 

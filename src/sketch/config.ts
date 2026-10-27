@@ -6,8 +6,6 @@
  * Distances are CSS pixels, so the piece looks the same on every screen density.
  */
 export const SKETCH = {
-  title: 'no Eternity',
-
   /** `for (int i = 0; i < 10000; i += 10)`: gap between circle centres in a row. */
   spacing: 10,
   /** `ellipse(i, mouseY, 30, 30)`: circle diameter. */
@@ -24,14 +22,7 @@ export const SKETCH = {
    */
   blueFullAt: 0.3,
 
-  /** `text("no Eternity", displayWidth/7, displayHeight/3)`: the baseline position. */
-  titleX: 1 / 7,
-  titleY: 1 / 3,
-  /** The 2015 promo art used the 90–100px font at ~1024px wide; scale it with the screen. */
-  titleSizeOfWidth: 0.09,
-  titleSizeOfHeight: 0.2,
-  titleMinSize: 24,
-  titleFont: '"Times New Roman", Times, "Liberation Serif", "Noto Serif", serif',
+  // The original also wrote "no Eternity" over the picture with `text()`; the website leaves it out.
 
   /** Processing's default frame rate. The simulation runs at this rate on any display. */
   stepsPerSecond: 60,

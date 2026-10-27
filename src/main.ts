@@ -11,7 +11,6 @@ function byId<T extends HTMLElement>(id: string): T {
 
 const stage = new Stage({
   art: byId('art'),
-  title: byId('title'),
   viewportProbe: byId('viewport-probe'),
 });
 

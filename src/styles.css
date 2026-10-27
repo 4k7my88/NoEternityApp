@@ -51,10 +51,6 @@ body {
   display: block;
 }
 
-.title-layer {
-  pointer-events: none;
-}
-
 body[data-ui='hidden'] .stage {
   cursor: none;
 }
