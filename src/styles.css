@@ -1,0 +1,358 @@
+:root {
+  color-scheme: dark;
+  --ink: #f4f1ea;
+  --muted: rgb(244 241 234 / 0.68);
+  --panel: rgb(10 10 10 / 0.72);
+  --line: rgb(255 255 255 / 0.14);
+  --focus: #ffd84d;
+  --gutter: 16px;
+  --safe-right: max(var(--gutter), env(safe-area-inset-right));
+  --safe-bottom: max(var(--gutter), env(safe-area-inset-bottom));
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.5;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+  background: #000;
+  color: var(--ink);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* The artwork. Canvases are pinned top-left and may be larger than the screen. */
+.stage {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  cursor: crosshair;
+}
+
+.stage canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+}
+
+body[data-ui='hidden'] .stage {
+  cursor: none;
+}
+
+/* Tells the script how tall the screen is with mobile browser bars hidden. */
+.viewport-probe {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 100vh;
+  height: 100lvh;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Controls */
+.toolbar {
+  position: fixed;
+  right: var(--safe-right);
+  bottom: var(--safe-bottom);
+  display: flex;
+  gap: 2px;
+  padding: 5px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.tool {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background-color 0.15s;
+}
+
+.tool[hidden] {
+  display: none;
+}
+
+.tool svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.tool svg .solid {
+  fill: currentColor;
+  stroke: none;
+}
+
+@media (hover: hover) {
+  .tool:hover {
+    background: rgb(255 255 255 / 0.12);
+  }
+}
+
+.tool[aria-pressed='true'] {
+  background: var(--ink);
+  color: #000;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.hint {
+  position: fixed;
+  right: var(--safe-right);
+  bottom: calc(var(--safe-bottom) + 64px);
+  max-width: calc(100vw - 2 * var(--gutter));
+  margin: 0;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--muted);
+  font-size: 0.875rem;
+  pointer-events: none;
+}
+
+.hint kbd {
+  padding: 0 5px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.8125rem;
+}
+
+/* Written for mouse and keyboard; touch screens get their own wording. */
+.hint-touch {
+  display: none;
+}
+
+@media (hover: none) {
+  .hint-mouse {
+    display: none;
+  }
+
+  .hint-touch {
+    display: inline;
+  }
+}
+
+body[data-hint='off'] .hint {
+  display: none;
+}
+
+.toolbar,
+.hint {
+  transition:
+    opacity 0.5s,
+    translate 0.5s;
+}
+
+body[data-ui='hidden'] .toolbar,
+body[data-ui='hidden'] .hint {
+  opacity: 0;
+  translate: 0 8px;
+  pointer-events: none;
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  top: max(var(--gutter), env(safe-area-inset-top));
+  max-width: calc(100vw - 2 * var(--gutter));
+  margin: 0;
+  padding: 8px 16px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  font-size: 0.875rem;
+  translate: -50% -8px;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.3s,
+    translate 0.3s;
+}
+
+.toast[data-visible] {
+  opacity: 1;
+  translate: -50% 0;
+}
+
+/* About */
+.about {
+  width: min(34rem, calc(100vw - 2 * var(--gutter)));
+  max-height: calc(100dvh - 2 * var(--gutter));
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #0d0d0d;
+  color: var(--ink);
+}
+
+.about::backdrop {
+  background: rgb(0 0 0 / 0.55);
+  backdrop-filter: blur(3px);
+}
+
+.about-body {
+  padding: 28px 28px 24px;
+}
+
+.about h2 {
+  margin: 0 0 4px;
+  font-family: 'Times New Roman', Times, 'Liberation Serif', 'Noto Serif', serif;
+  font-size: 2.25rem;
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+.about h3 {
+  margin: 24px 0 8px;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.about p,
+.about ul {
+  margin: 0 0 12px;
+}
+
+.about ul {
+  padding-left: 1.2em;
+}
+
+.about li + li {
+  margin-top: 4px;
+}
+
+.about .lede {
+  color: var(--muted);
+}
+
+.about .keys,
+.about .credits {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+@media (pointer: coarse) {
+  .about .keys {
+    display: none;
+  }
+}
+
+.about a {
+  color: var(--ink);
+}
+
+.about form {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.close {
+  min-height: 44px;
+  padding: 0 20px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--ink);
+  color: #000;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.noscript {
+  position: fixed;
+  inset: auto var(--gutter) 40% var(--gutter);
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toolbar,
+  .hint,
+  .toast {
+    transition: opacity 0.2s;
+    translate: none;
+  }
+
+  .toast,
+  .toast[data-visible] {
+    translate: -50% 0;
+  }
+}
+
+/* The dissolve icon, inline in text. */
+.glyph {
+  width: 1.1em;
+  height: 1.1em;
+  vertical-align: -0.2em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+}
+
+.glyph .solid {
+  fill: currentColor;
+  stroke: none;
+}
+
+/* Sound toggle: the icon shows the state, so it doesn't invert like the hold buttons. */
+#sound[aria-pressed='true'] {
+  background: transparent;
+  color: var(--ink);
+}
+
+#sound[aria-pressed='true'] .sound-off,
+#sound[aria-pressed='false'] .sound-on {
+  display: none;
+}
+
+@media (hover: hover) {
+  #sound[aria-pressed='true']:hover {
+    background: rgb(255 255 255 / 0.12);
+  }
+}

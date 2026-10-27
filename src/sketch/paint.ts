@@ -1,0 +1,95 @@
+import { SKETCH } from './config';
+import { random, type Rng } from './random';
+
+/** The slice of the 2D canvas API the painting code uses, so tests can pass a recorder. */
+export type PaintContext = Pick<
+  CanvasRenderingContext2D,
+  'fillStyle' | 'beginPath' | 'arc' | 'fill' | 'rect' | 'save' | 'restore' | 'translate' | 'rotate'
+>;
+
+const TAU = Math.PI * 2;
+const ALPHA = +(SKETCH.alpha / 255).toFixed(4);
+
+/** Processing clamps colour components to 0–255 and truncates them to integers. */
+export function clampChannel(value: number): number {
+  return Math.max(0, Math.min(255, Math.floor(value)));
+}
+
+/** Red or green: `random(10, 555)`, clamped. */
+export function warmChannel(rng: Rng): number {
+  return clampChannel(random(rng, SKETCH.channelMin, SKETCH.channelMax));
+}
+
+/** Blue follows the pointer's horizontal position; see `SKETCH.blueFullAt`. */
+export function blueAt(x: number, width: number): number {
+  if (width <= 0) return 0;
+  return clampChannel((x / (width * SKETCH.blueFullAt)) * 255);
+}
+
+/** One circle from a painted row, for the sound to play. */
+export interface CircleSample {
+  x: number;
+  red: number;
+  green: number;
+}
+
+/**
+ * The original `one()`: a row of translucent circles across the screen at `y`,
+ * each with its own random red and green. Returns one of the circles it drew,
+ * picked at random.
+ */
+export function paintRow(
+  ctx: PaintContext,
+  rng: Rng,
+  y: number,
+  blue: number,
+  rowWidth: number,
+): CircleSample {
+  const radius = SKETCH.diameter / 2;
+  // As many circles as it takes for the last one to reach past the right edge.
+  const count = Math.ceil((rowWidth + radius) / SKETCH.spacing);
+  const picked = Math.floor(rng() * count);
+  let sample: CircleSample = { x: 0, red: 0, green: 0 };
+  for (let i = 0; i < count; i++) {
+    const x = i * SKETCH.spacing;
+    const red = warmChannel(rng);
+    const green = warmChannel(rng);
+    ctx.fillStyle = `rgba(${red},${green},${blue},${ALPHA})`;
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, TAU);
+    ctx.fill();
+    if (i === picked) sample = { x, red, green };
+  }
+  return sample;
+}
+
+export interface DissolveState {
+  angle: number;
+}
+
+export function createDissolveState(): DissolveState {
+  return { angle: SKETCH.dissolve.startAngle };
+}
+
+/**
+ * The black squares from `CLASS.display()`. The transforms pile up on purpose, as in
+ * the original: each line of squares is turned and pushed further along, so the
+ * pattern snakes across the screen and changes every frame. The blur that came
+ * before it is `blurInPlace`.
+ */
+export function scatter(ctx: PaintContext, rng: Rng, state: DissolveState): void {
+  const d = SKETCH.dissolve;
+  ctx.save();
+  ctx.fillStyle = '#000';
+  ctx.beginPath();
+  for (let i = d.outerFrom; i < d.outerTo; i += d.outerStep) {
+    ctx.translate(i, d.offset);
+    ctx.rotate(Math.sin(state.angle));
+    state.angle += d.angleStep;
+    for (let j = d.innerFrom; j < d.innerTo; j += d.innerStep) {
+      ctx.rect(random(rng, 0, d.spread), i, d.size, d.size);
+    }
+  }
+  ctx.fill();
+  ctx.restore();
+}
