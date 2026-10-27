@@ -62,7 +62,7 @@ export function setupControls(stage: Stage, sound: SoundEngine, el: ControlEleme
     showControls();
   };
 
-  // Dissolve: held down, like the pressure sensors of the original installation.
+  // Dissolve: held down, like the sensors that triggered it in the original sketch.
   function dissolve(on: boolean): void {
     if ((el.dissolve.getAttribute('aria-pressed') === 'true') === on) return;
     el.dissolve.setAttribute('aria-pressed', String(on));

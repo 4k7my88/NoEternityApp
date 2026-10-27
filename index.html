@@ -13,7 +13,6 @@
     <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="manifest" href="/manifest.webmanifest" />
 
     <meta property="og:type" content="website" />
     <meta property="og:title" content="no Eternity" />
@@ -41,7 +40,10 @@
       <canvas id="title" class="title-layer" aria-hidden="true"></canvas>
     </main>
 
-    <p class="hint" aria-hidden="true">Move or touch to paint · hold <svg class="glyph" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" /><path d="M12 4a8 8 0 0 0 0 16z" class="solid" /></svg> to dissolve</p>
+    <p class="hint" aria-hidden="true">
+      <span class="hint-mouse">Move the mouse to paint · hold <kbd>Space</kbd> to dissolve · <kbd>M</kbd> sound · <kbd>F</kbd> full screen</span>
+      <span class="hint-touch">Touch to paint · hold <svg class="glyph" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" /><path d="M12 4a8 8 0 0 0 0 16z" class="solid" /></svg> to dissolve</span>
+    </p>
 
     <nav id="toolbar" class="toolbar" aria-label="Artwork controls">
       <button id="sound" class="tool" type="button" aria-pressed="false" aria-label="Sound" title="Sound (M)">
@@ -93,8 +95,8 @@
         <p class="keys">Keys: arrows move · Space dissolve · M sound · S save · F full screen · I about</p>
 
         <p class="credits">
-          First made in 2015 with Processing, as an Android app.
-          <a href="https://github.com/4k7my88/NoEternityApp/tree/master/noEternity" target="_blank" rel="noopener">See the original sketch</a>.
+          First made in 2015 with Processing, as an Android app; now a website.
+          <a href="https://github.com/4k7my88/NoEternityApp/tree/master/archive" target="_blank" rel="noopener">See the original sketch</a>.
         </p>
         <form method="dialog">
           <button class="close" type="submit" autofocus>Close</button>

@@ -153,6 +153,30 @@ body[data-ui='hidden'] .stage {
   pointer-events: none;
 }
 
+.hint kbd {
+  padding: 0 5px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.8125rem;
+}
+
+/* Written for mouse and keyboard; touch screens get their own wording. */
+.hint-touch {
+  display: none;
+}
+
+@media (hover: none) {
+  .hint-mouse {
+    display: none;
+  }
+
+  .hint-touch {
+    display: inline;
+  }
+}
+
 body[data-hint='off'] .hint {
   display: none;
 }

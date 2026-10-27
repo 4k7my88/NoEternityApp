@@ -1,6 +1,6 @@
 /**
  * Every tunable of the artwork lives here. The defaults mirror the original
- * Processing sketch in `noEternity/noEternity.pde` and `noEternity/CLASS.pde`;
+ * Processing sketch in `archive/noEternity/noEternity.pde` and `CLASS.pde`;
  * the comment on each value says where it comes from.
  *
  * Distances are CSS pixels, so the piece looks the same on every screen density.

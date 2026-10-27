@@ -1,25 +1,27 @@
 # no Eternity
 
-A generative, iterative and interactive screen-saver artwork. By your touch, it changes.
+A generative, iterative and interactive screen-saver artwork, made as a website. By your touch, it changes.
 
 I combine analogue feeling and digital technologies in the creation of my work.
 I created composite collages that reflect on relationships between the eternity and its image.
 There are no eternity.
 
-![no Eternity](noEternity/Untitled-2.png)
+![no Eternity in a desktop browser](docs/screenshot.jpg)
 
-## The web version
+## The website
 
-The piece runs in the browser on phones, tablets and computers:
+The artwork fills the browser window. It is designed for a desktop or laptop browser:
 
-- **Move the mouse or drag a finger** to paint bands of translucent colour. Every finger paints its own band, and the band keeps building where you let go, as it did in the app.
-- **Hold the ◐ button, or the space bar,** to dissolve the image. This brings back the blur-and-scratch effect from the original installation, which was triggered by sensors.
-- **Leave it alone** and it keeps painting itself, like a screen saver. Full screen also keeps the display awake.
-- **Turn on the sound** (speaker button or M) to hear the picture. It's off until you ask, and the choice is remembered.
-- **Save** downloads the current moment as a PNG (on phones it opens the share sheet).
-- Keys: arrow keys move the brush · Space dissolve · M sound · S save · F full screen · I about.
+- **Move the mouse** to paint bands of translucent colour. There's no need to click: the band follows the pointer and keeps building where you stop.
+- **Hold the space bar** (or the ◐ button) to dissolve the image. This brings back the blur-and-scratch effect that the sensor-driven version of the original triggered.
+- **Leave it alone** and it keeps painting itself, like a screen saver. Press **F** for full screen, which also keeps the display from sleeping.
+- **Press M** (or the speaker button) to hear the picture. Sound is off until you ask, and the choice is remembered.
+- **Press S** to save the current moment as a PNG.
+- Arrow keys move the brush; **I** opens the About panel.
 
-It is a static site with no server and no tracking. The code and styles together are under 10 KB gzipped, and it can be added to a home screen like an app.
+It also works on phones and tablets: drag a finger to paint, and each finger paints its own band.
+
+It is a static site with no server and no tracking, and the code and styles together are under 10 KB gzipped.
 
 ### Sound
 
@@ -71,7 +73,7 @@ Link previews (for example in messages and social posts) use the production doma
 
 Every tunable value is in [`src/sketch/config.ts`](src/sketch/config.ts): circle size and spacing, opacity, colour ranges, title, screen-saver speed and the dissolve effect. Each value is annotated with the line of the original sketch it comes from.
 
-| Original (`noEternity/*.pde`)                               | Web (`src/`)                                    |
+| Original (`archive/noEternity/*.pde`)                       | Web (`src/`)                                    |
 | ----------------------------------------------------------- | ----------------------------------------------- |
 | `one()`: a row of circles at `mouseY`                       | `paintRow()` in `sketch/paint.ts`               |
 | `fill(random(10,555), random(10,555), mouseX, 40)`          | `warmChannel()` and `blueAt()`                  |
@@ -81,9 +83,8 @@ Every tunable value is in [`src/sketch/config.ts`](src/sketch/config.ts): circle
 | Arduino sensors 3 and 4 trigger `CLASS.display()`           | the ◐ button and the space bar                  |
 | (no sound)                                                  | `sound/engine.ts`, following `sketch/ink.ts`    |
 
-## The original app (2015)
+## History
 
-The Processing for Android sketch is in [`noEternity/`](noEternity). It was published on Google Play as
-[processing.test.noeternityapp](https://play.google.com/store/apps/details?id=processing.test.noeternityapp).
+no Eternity began in 2015 as a Processing sketch: a version driven by Arduino sensors, and an Android app. This website replaces the app. The original sketch is kept in [`archive/`](archive) for reference; the Android project files were removed.
 
-See [docs/REVIEW.md](docs/REVIEW.md) for a review of the original project and what changed in the web version.
+See [docs/REVIEW.md](docs/REVIEW.md) for a review of the original project and what changed in the website.
